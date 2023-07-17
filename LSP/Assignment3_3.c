@@ -1,16 +1,18 @@
 #include<stdio.h>
 #include<stdlib.h>
-#include<unistd.h>
-#include<fcntl.h>
+#include<string.h>
 #include<sys/stat.h>
+#include<sys/types.h>
 #include<dirent.h>
+#include<unistd.h>
 
 int main(int argc, char *argv[])
 {
-    int fd = 0;
     DIR *dp = NULL;
     struct dirent *entry = NULL;
-    
+    char oldname[50];
+    char newname[50];
+
     if(argc != 3)
     {
         printf("Insufficient arguments\n");
@@ -21,25 +23,18 @@ int main(int argc, char *argv[])
 
     if(dp == NULL)
     {
-        printf("Unable to open directory\n");
+        printf("Unable to open the directory\n");
         return -1;
     }
 
     while((entry = readdir(dp)) != NULL)
     {
-        if(strcmp(argv[2], entry->d_name) == 0)
-        {
-            printf("File is present in the directory\n");
-            break;
-        }
+        sprintf(oldname, "%s/%s", argv[1], entry->d_name);
+        sprintf(newname, "%s/%s", argv[2], entry->d_name);
+
+        rename(oldname, newname);
     }
-    
-    if(entry == NULL)
-    {
-        printf("There is no such file\n");
-        return -1;
-    }
-    
+
     closedir(dp);
 
     return 0;
